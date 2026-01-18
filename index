@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TradeDocs – Smart Trade Document Maker</title>
+<meta charset="utf-8">
+<style>
+body {
+  background:#0e1520;
+  color:white;
+  font-family:-apple-system;
+  text-align:center;
+  padding:40px;
+}
+.card {
+  max-width:900px;
+  margin:auto;
+  background:#141c2b;
+  padding:30px;
+  border-radius:20px;
+}
+h1 { color:#d4af37; }
+</style>
+</head>
+
+<body>
+<div class="card">
+<h1>TradeDocs</h1>
+
+<p>Create professional export documents in seconds</p>
+
+<h3>Features</h3>
+<ul style="text-align:left">
+<li>Commercial Invoice Generator</li>
+<li>Proforma Invoice</li>
+<li>Packing List Creator</li>
+<li>Offline PDF Export</li>
+<li>Document Storage</li>
+<li>Professional Templates</li>
+</ul>
+
+<p>Designed for exporters, traders and logistics teams.</p>
+
+<p>© 2026 TradeDocs</p>
+</div>
+</body>
+</html>
