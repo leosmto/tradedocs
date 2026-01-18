@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TradeDocs — Invoice • Proforma • Packing List (Offline PDF)</title>
+  <meta name="description" content="TradeDocs is an elegant offline-first toolkit for generating trade documents: Commercial Invoice, Proforma Invoice, Packing List, PDF export, and document storage." />
+
+  <style>
+    :root{
+      --bg0:#070B12;
+      --bg1:#0B1220;
+      --card:rgba(255,255,255,.06);
+      --stroke:rgba(255,255,255,.10);
+      --muted:rgba(255,255,255,.70);
+      --muted2:rgba(255,255,255,.55);
+
+      --navy:#0B1220;
+      --navy2:#0F1A2D;
+
+      --gold:#D4AF37;
+      --gold2:#F6E27A;
+      --goldStroke:rgba(212,175,55,.35);
+
+      --shadow: 0 18px 55px rgba(0,0,0,.55);
+      --shadow2: 0 10px 22px rgba(0,0,0,.45);
+
+      --r16:16px;
+      --r20:20px;
+      --r26:26px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      color:#fff;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+      background:
+        radial-gradient(900px 900px at 15% -10%, rgba(212,175,55,.18), transparent 55%),
+        radial-gradient(700px 700px at 95% 20%, rgba(80,140,255,.16), transparent 55%),
+        radial-gradient(900px 900px at 50% 110%, rgba(212,175,55,.12), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    a{color:inherit; text-decoration:none}
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:28px 18px 48px;
+    }
+
+    /* Top Nav */
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:12px 14px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position:sticky;
+      top:14px;
+      z-index:20;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      padding-left:6px;
+    }
+    .logo{
+      width:40px;height:40px;
+      border-radius:14px;
+      display:grid;place-items:center;
+      background:
+        radial-gradient(16px 16px at 30% 30%, rgba(246,226,122,.95), rgba(212,175,55,.65)),
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: 0 10px 22px rgba(212,175,55,.16);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-60%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+      transform: rotate(25deg);
+      animation: shine 4.5s infinite ease-in-out;
+    }
+    @keyframes shine{
+      0%{transform:translateX(-60%) rotate(25deg)}
+      35%{transform:translateX(60%) rotate(25deg)}
+      100%{transform:translateX(60%) rotate(25deg)}
+    }
+    .brand h1{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.6px;
+      font-weight:800;
+      line-height:1.05;
+    }
+    .brand span{
+      display:block;
+      margin-top:2px;
+      font-size:11px;
+      color:var(--muted2);
+      font-weight:600;
+      letter-spacing:.3px;
+    }
+    .navlinks{
+      display:flex; gap:8px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .chip{
+      padding:10px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      color:rgba(255,255,255,.88);
+      font-weight:700;
+      font-size:12px;
+      transition:.2s;
+    }
+    .chip:hover{transform: translateY(-1px); border-color: rgba(212,175,55,.35);}
+
+    .chip.gold{
+      background: rgba(212,175,55,.12);
+      border-color: rgba(212,175,55,.35);
+      color: var(--gold2);
+    }
+
+    /* Hero */
+    .hero{
+      margin-top:18px;
+      padding:22px;
+      border-radius: var(--r26);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .hero:before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(800px 400px at 20% 0%, rgba(212,175,55,.18), transparent 55%),
+        radial-gradient(700px 420px at 95% 10%, rgba(80,140,255,.14), transparent 60%);
+      pointer-events:none;
+    }
+    .heroGrid{
+      position:relative;
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:16px;
+      align-items:stretch;
+    }
+
+    .kicker{
+      color: rgba(246,226,122,.95);
+      font-weight:900;
+      letter-spacing:.7px;
+      font-size:12px;
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+    .title{
+      margin:0;
+      font-size:42px;
+      line-height:1.05;
+      letter-spacing:-.6px;
+      font-weight:950;
+    }
+    .subtitle{
+      margin:12px 0 0;
+      color: var(--muted);
+      font-size:15px;
+      line-height:1.55;
+      max-width:52ch;
+      font-weight:600;
+    }
+    .bullets{
+      margin:16px 0 0;
+      display:flex; gap:8px; flex-wrap:wrap;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      font-size:12px;
+      font-weight:800;
+      color: rgba(255,255,255,.9);
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, var(--gold2), var(--gold));
+      box-shadow: 0 0 0 4px rgba(212,175,55,.15);
+    }
+
+    .ctaRow{
+      margin-top:18px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .btn{
+      border:0;
+      cursor:pointer;
+      padding:12px 14px;
+      border-radius: 14px;
+      font-weight:900;
+      font-size:13px;
+      letter-spacing:.2px;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      transition:.18s;
+      user-select:none;
+    }
+    .btnPrimary{
+      background: linear-gradient(180deg, rgba(246,226,122,.95), rgba(212,175,55,.88));
+      color:#14110a;
+      box-shadow: 0 14px 28px rgba(212,175,55,.18);
+    }
+    .btnPrimary:hover{transform: translateY(-1px);}
+    .btnGhost{
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.92);
+    }
+    .btnGhost:hover{transform: translateY(-1px); border-color: rgba(212,175,55,.30);}
+
+    .phone{
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: var(--r26);
+      padding:14px;
+      position:relative;
+      overflow:hidden;
+      box-shadow: var(--shadow2);
+    }
+    .mockTop{
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:10px;
+      opacity:.95;
+    }
+    .pill{
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(212,175,55,.10);
+      border:1px solid rgba(212,175,55,.28);
+      color: rgba(246,226,122,.95);
+      font-weight:900;
+      font-size:11px;
+      letter-spacing:.3px;
+    }
+    .mockCard{
+      margin-top:10px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding:12px;
+    }
+    .line{
+      height:10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.10);
+      margin:10px 0;
+      overflow:hidden;
+      position:relative;
+    }
+    .line:after{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+      transform: translateX(-60%);
+      animation: shimmer 2.8s infinite ease-in-out;
+    }
+    @keyframes shimmer{
+      0%{transform: translateX(-60%)}
+      50%{transform: translateX(60%)}
+      100%{transform: translateX(60%)}
+    }
+    .line.short{width:68%}
+    .line.tiny{width:42%}
+
+    /* Sections */
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+    .grid3{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+    .card{
+      padding:16px;
+      border-radius: var(--r20);
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      position:relative;
+      overflow:hidden;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:-1px;
+      border-radius:inherit;
+      border:1px solid rgba(212,175,55,.22);
+      pointer-events:none;
+      mix-blend-mode: plus-lighter;
+      opacity:.55;
+    }
+    .card h3{
+      margin:0 0 8px;
+      font-size:14px;
+      font-weight:950;
+      letter-spacing:.2px;
+    }
+    .card p{
+      margin:0;
+      color: var(--muted);
+      font-size:13px;
+      line-height:1.55;
+      font-weight:600;
+    }
+    .icon{
+      width:44px;height:44px;border-radius:16px;
+      display:grid;place-items:center;
+      background: rgba(212,175,55,.10);
+      border:1px solid rgba(212,175,55,.28);
+      margin-bottom:12px;
+      box-shadow: 0 12px 22px rgba(212,175,55,.12);
+      font-size:18px;
+    }
+    .sectionTitle{
+      margin-top:18px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .sectionTitle h2{
+      margin:0;
+      font-size:18px;
+      font-weight:950;
+      letter-spacing:.2px;
+    }
+    .sectionTitle span{
+      color: var(--muted2);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+
+    /* Footer */
+    .footer{
+      margin-top:18px;
+      padding:16px;
+      border-radius: var(--r20);
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      color: var(--muted2);
+      font-weight:650;
+      font-size:12px;
+    }
+    .footer b{color: rgba(246,226,122,.95)}
+
+    /* Responsive */
+    @media (max-width: 860px){
+      .heroGrid{grid-template-columns:1fr;}
+      .title{font-size:36px;}
+      .grid3{grid-template-columns:1fr;}
+      .grid2{grid-template-columns:1fr;}
+      .nav{border-radius:22px;}
+    }
+    @media (max-width: 420px){
+      .title{font-size:32px;}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">✦</div>
+        <div>
+          <h1>TradeDocs</h1>
+          <span>Office-grade export documents</span>
+        </div>
+      </div>
+
+      <div class="navlinks">
+        <a class="chip" href="#features">Features</a>
+        <a class="chip" href="#templates">Templates</a>
+        <a class="chip" href="#offline">Offline</a>
+        <a class="chip gold" href="https://USERNAME.github.io/tradedocs-support">Support</a>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="heroGrid">
+        <div>
+          <div class="kicker">Navy • Gold • Professional</div>
+          <h2 class="title">Create trade documents with speed and precision.</h2>
+          <p class="subtitle">
+            TradeDocs helps exporters and office teams generate <b>Commercial Invoice</b>, <b>Proforma Invoice</b>,
+            and <b>Packing List</b> — then export to <b>PDF</b> and keep everything stored inside the app.
+          </p>
+
+          <div class="bullets">
+            <div class="badge"><span class="dot"></span> Offline-first PDF export</div>
+            <div class="badge"><span class="dot"></span> Document storage & search</div>
+            <div class="badge"><span class="dot"></span> Professional templates</div>
+          </div>
+
+          <div class="ctaRow">
+            <a class="btn btnPrimary" href="#templates">View Templates →</a>
+            <a class="btn btnGhost" href="https://USERNAME.github.io/tradedocs-support">Get Support</a>
+          </div>
+
+          <p style="margin-top:10px;color:rgba(255,255,255,.45);font-size:12px;font-weight:700">
+            Replace <b>USERNAME</b> in links with your GitHub username.
+          </p>
+        </div>
+
+        <div class="phone" aria-label="App preview mock">
+          <div class="mockTop">
+            <div class="pill">OFFLINE • PDF</div>
+            <div style="color:rgba(255,255,255,.55);font-size:12px;font-weight:800">TradeDocs</div>
+          </div>
+
+          <div class="mockCard">
+            <div style="display:flex;gap:10px;align-items:center">
+              <div class="icon">📄</div>
+              <div style="flex:1">
+                <div style="font-weight:950">Commercial Invoice</div>
+                <div style="color:rgba(255,255,255,.55);font-size:12px;font-weight:700">A4 • Professional layout</div>
+              </div>
+            </div>
+            <div class="line"></div>
+            <div class="line short"></div>
+            <div class="line tiny"></div>
+          </div>
+
+          <div class="mockCard">
+            <div style="display:flex;gap:10px;align-items:center">
+              <div class="icon">📦</div>
+              <div style="flex:1">
+                <div style="font-weight:950">Packing List</div>
+                <div style="color:rgba(255,255,255,.55);font-size:12px;font-weight:700">Cartons • Net/Gross</div>
+              </div>
+            </div>
+            <div class="line"></div>
+            <div class="line short"></div>
+          </div>
+
+          <div class="mockCard">
+            <div style="display:flex;gap:10px;align-items:center">
+              <div class="icon">🗂️</div>
+              <div style="flex:1">
+                <div style="font-weight:950">Stored Documents</div>
+                <div style="color:rgba(255,255,255,.55);font-size:12px;font-weight:700">Search & preview</div>
+              </div>
+            </div>
+            <div class="line"></div>
+            <div class="line tiny"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="sectionTitle" id="features">
+      <h2>Core Features</h2>
+      <span>Built for office workflow</span>
+    </div>
+
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">🧾</div>
+        <h3>Commercial Invoice</h3>
+        <p>Create clean invoices with buyer/seller fields, items, totals, and A4 PDF output.</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">🧮</div>
+        <h3>Proforma Invoice</h3>
+        <p>Fast quoting & pre-invoice workflow for export and negotiation.</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">📦</div>
+        <h3>Packing List</h3>
+        <p>Cartons, HS codes, quantity, net/gross weights, totals — exported as PDF.</p>
+      </div>
+    </div>
+
+    <div class="grid2" id="offline">
+      <div class="card">
+        <div class="icon">📄</div>
+        <h3>Offline PDF Export</h3>
+        <p>Generate and export PDFs directly on device. No internet required.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🗂️</div>
+        <h3>Document Storage</h3>
+        <p>Import, store, search and preview all generated files inside the app.</p>
+      </div>
+    </div>
+
+    <div class="sectionTitle" id="templates">
+      <h2>Templates</h2>
+      <span>Professional A4 layout</span>
+    </div>
+
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">📄</div>
+        <h3>Invoice Template</h3>
+        <p>Office-grade invoice design for exporters and trading companies.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🧾</div>
+        <h3>Proforma Template</h3>
+        <p>Quote-first workflow, ready for PDF sharing and approvals.</p>
+      </div>
+      <div class="card">
+        <div class="icon">📦</div>
+        <h3>Packing List Template</h3>
+        <p>Clear table layout for logistics teams and customs.</p>
+      </div>
+    </div>
+
+    <div class="sectionTitle">
+      <h2>Support & Contact</h2>
+      <span>Fast help for users</span>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="icon">🛟</div>
+        <h3>Support Page</h3>
+        <p>FAQ, troubleshooting, and direct contact for app issues.</p>
+        <div style="margin-top:12px">
+          <a class="btn btnGhost" href="https://USERNAME.github.io/tradedocs-support">Open Support →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="icon">✉️</div>
+        <h3>Email Support</h3>
+        <p>For quick assistance, email us with screenshots and your device model.</p>
+        <div style="margin-top:12px">
+          <a class="btn btnGhost" href="mailto:support@tradedocs.app">support@tradedocs.app</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div><b>TradeDocs</b> • Navy & Gold office toolkit • Offline-first PDF</div>
+      <div>© 2026 TradeDocs • Built for export & trade operations</div>
+    </div>
+
+  </div>
+
+  <script>
+    // Optional: smooth anchor scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        const id = a.getAttribute('href');
+        const el = document.querySelector(id);
+        if(!el) return;
+        e.preventDefault();
+        el.scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    });
+  </script>
+</body>
+</html>
